@@ -1,0 +1,161 @@
+                                        CS 223 Homework#1
+                           Due date: 11:59 pm September 20th, 2024
+
+1. The design team for a simple, single-issue processor is choosing between a pipelined or
+non-pipelined implementation. Here are some design parameters for the two possibilities:
+Parameter Pipelined Version Non-Pipelined Version
+Perameter                    Pipelined Verssion Non-Pipelined Version
+
+Clock Rate                   	500MHz                 350 MHz
+
+CPI for ALU instructions             1                     1
+
+CPI for Control                      2                     1
+instructions
+
+CPI for Memory                       2.7                   1
+instructions
+
+(a) For a program with 20% ALU instructions, 10% control instructions and 70% memory
+instructions, which design will be faster? Give a quantitative CPI average for each case.
+(3 points)
+
+***MYANSWER( 
+		The Non-Pipelined version will be faster 
+
+		Pipelined: 
+		CPI = (1*.2) + (2*.1) + (2.7*.7) = 2.29
+		Execution Time = (2.29) / (500 * 10^6) = 4.58 * 10^-9 Seconds 
+
+		Non-Pipelined: 
+		CPI = (1*.2) + (1*.1) + (1*.7) = 1.0
+		Execution Time = (1.0) / (350 * 10^6) = 2.857 * 10^-9 Seconds 
+)MYANSWER***
+
+ (b) For a program with 80% ALU instructions, 10% control instructions and 10% memory
+instructions, which design will be faster? Give a quantitative CPI average for each case.
+(3 points)
+
+***MYANSWER( 
+		The Pipelined version will be faster
+
+		Pipelined:
+		CPI = (1*.8) + (2*.1) + (2.7*.1) = 1.27
+		Execution Time = (1.27) / (500 * 10^6) = 2.54 * 10^-9 Seconds
+
+		Non-Pipelined:
+		CPI = (1*.8) + (1*.1) + (1*.1) = 1.0
+		Execution Time = (1.0) / (350 * 10^6) = 2.86 * 10^-9 Seconds 
+)MYANSWER***
+
+
+    2. Use the register and memory values in the table below for the next questions. Assume a
+32-bit machine. Assume each of the following questions starts from the table values; that is, DO
+NOT use value changes from one question as propagating into future parts of the question.
+(3 points)Register Value Memory Location Value
+Register       Value           Memory Location        Value
+
+R1             12              12                     16
+R2             16              16                     20
+R3             20              20                     24
+R4             24              24                     28
+
+a) Give the values of R1, R2, and R3 after this instruction: add R3, R2, R1
+
+***MYANSWER(
+	     The sum of R1 and R2 is stored in R3
+	     R1 = 12
+	     R2 = 16
+	     R3 = 12 + 16 = 28
+)MYANSWER***
+
+
+b) What values will be in R1 and R3 after this instruction is executed: load R3, 12(R1)
+
+***MYANSWER(
+		The value stored in the memory location of R1 offset by 12, is stored in R3
+		R1 = 12
+		R3 = Memory Location(R1 + 12) = Memory Location(12 + 12) = Memory Location(24) = 28
+		R3 = 28
+)MYANSWER***
+
+
+c) What values will be in the registers after this instruction is executed: addi R2, R3, #16
+
+***MYANSWER(
+		The value at R3 will be added immediately with the 16, and the result will be stored in R2
+		R1 = 12
+		R2 = 36
+		R3 = 20
+		R4 = 24
+)MYANSWER***
+
+
+     3. Explain each line of the following MIPS assembly language code segment. Write the
+        corresponding C language code and indicate the content of each register with the
+        corresponding variable in C-code. (3 points)
+
+***MYANSWER(
+	        muli $t2, $s1, 4	# the value at register $s1 is multiplied by 4 and 
+					# stored in register $t2
+		t2 = s1 * 4;
+ 
+ 	       add $t2, $t4, $t2	# the value of $t4 is added with the value of $t2 
+					# and stored in $t2
+		t2 = t4 + t2;
+	
+        	lw $t15, 0($t2)		# loads the word from the memory address pointed 
+					# to by $t2 and stores it in $t15
+		t15 = *t2
+
+	        lw $t16, 4($t2)		# loads the word from the memory address 4 bytes over 
+					# from $t2 and stores it in $t16
+		t16 = *(t2 + 4)
+
+	        sw $t16, 0($t2)		# the value in $t16 is stored in the memory pointed 
+					# to by $t2
+		*t2 = t16 
+ 
+	        sw $t15, 4($t2)		# the value in $t15 is stored in the memory 4 bytes
+					# over from what's pointed to by $t2
+		*(t2 + 4) = t15
+
+		The code looks like it is swapping two elements that are next to each other in 
+		an array, it could look something like this
+	
+	```c
+		void swap(int arr[], int n) {
+			int temp1 = arr[n];
+			int temp2 = arr[n + 1];
+			arr[n] = temp2;
+			arr[n + 1] = temp1;
+		}
+	```
+)MYANSWER***
+
+   4. Write an MIPS assembly code segment for the following C program segment. Explain each
+      line of your MIPS code and indicate the content of each register with the corresponding
+      variable in C-code.
+             while (save[i] != k) i += 1;
+
+Initial condition: i in $s3, k in $s5, address of save in $s6 (3 points)
+
+***MYANSWER(
+		Loop: sll, $tl, $s3, 2	# shift left logical operator, $t1 = i * 4, allows us 
+					# to access the correct element in the save array
+
+		add   $t1, $t1, $w6	# adds the offset to the base of the array giving us
+					# the address of the ith element, $t1 = &save[i]
+
+		lw    $t0, 0($t1)	# loads the value in save[i] to $t0
+
+		beq   $t0, $s5, Exit	# compares save[i] with k and if they are equal it 
+					# branches to the Exit statement
+
+		addi $s3, $s3, 1	# iterates i, i += 1;
+
+		j Loop 			# jumps back to the Loop label
+
+		Exit:		
+)MYANSWER***	
+
